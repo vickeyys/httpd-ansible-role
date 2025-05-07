@@ -1,0 +1,24 @@
+---    
+- name: install apache
+  ansible.builtin.shell: "yum install httpd -y" 
+  become: true 
+
+- name: start httpd
+  ansible.builtin.shell: "systemctl start httpd"
+
+- name: enable httpd
+  ansible.builtin.shell: "systemctl enable httpd"
+
+- name: Set Apache to listen on a custom port
+  ansible.builtin.lineinfile:
+    path: /etc/httpd/conf/httpd.conf
+    regexp: '^#?Listen '
+    line: "Listen {{ httpd_port }}"
+  notify: restart httpd
+  become: true
+
+- name: copy index.html
+  copy:
+    src: index.html
+    dest: /var/www/html
+  become: true
